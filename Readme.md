@@ -83,3 +83,23 @@ Certificate and keys will be saved under `/etc/letsencrypt` in data container it
 ## Certificate Renewal
 
 TBD
+
+## Backup and Restore
+
+To backup generated data simply execute
+
+```
+docker run --volumes-from $LE_DATA --rm busybox tar -cvf - -C /etc letsencrypt | xz > letsencrypt-backup.tar.xz
+```
+
+and you'll have an archive including all the needed stuff. To restore it
+
+```
+xzcat letsencrypt-backup.tar.xz | docker run --name $LE_DATA -v /etc/letsencrypt -v /var/lib/letsencrypt -i busybox tar -xvf - -C /etc
+```
+
+This will create volumes in a new (or existing) data container with exported data in the right place.
+
+Credits for this approach goes to [kylemanna](https://github.com/kylemanna/docker-openvpn/blob/master/docs/backup.md) and its awesome openvpn container.
+
+
